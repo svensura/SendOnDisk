@@ -2,7 +2,6 @@
 const express = require('express');
 const app = express();
 const appPath = require('path');
-var appDir = appPath.dirname(require.main.filename);
 const fs = require('fs');
 const axios = require('axios');
 const args = process.argv.slice(2)
@@ -10,7 +9,7 @@ const args = process.argv.slice(2)
 const port = process.env.PORT || args[0] || 3000
 const imagePath = `downloads/`
 var newJSON = ''
-var appDir = process.argv.slice(2) || appPath.dirname(require.main.filename);
+const appDir = process.argv.slice(3) || 'C:\\temp\\'
 
 const check_image = ((messages) => {
   messages.forEach((message) => {
@@ -18,11 +17,11 @@ const check_image = ((messages) => {
     try {
       if (fs.existsSync(imagePath + id)) {
           console.log('file exists')
-          message.photourl = `${appDir}/${imagePath}${id}`
+          message.photourl = `${appDir}\${imagePath}${id}`
           console.log('File saved under new URL: ', message.photourl)
         } else if (message.mediatype == 'photo') {
           download_image(message.photourl, imagePath + id);
-          message.photourl = `${appDir}/${imagePath}${id}`
+          message.photourl = `${appDir}\${imagePath}${id}`
           console.log('File saved under new URL: ', message.photourl)
         }
     } catch(err) {
@@ -74,5 +73,7 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}, you find the DOWNLOAD-folder at ${appDir}, in VENTUZ replace "https://send.on-screen.info/api/" with "localhost:3000"`);
+    console.log(`Server listening on port ${port}`);
+    console.log(`You find the DOWNLOAD-folder at ${appDir}`);
+    console.log(`In VENTUZ replace "https://send.on-screen.info/api/" with "localhost:${port}/"`);
 }) 
