@@ -17,11 +17,11 @@ const check_image = ((messages) => {
     try {
       if (fs.existsSync(imagePath + id)) {
           console.log('file exists')
-          message.photourl = `${appDir}\${imagePath}${id}`
+          message.photourl = `${appDir}/${imagePath}${id}`
           console.log('File saved under new URL: ', message.photourl)
         } else if (message.mediatype == 'photo') {
           download_image(message.photourl, imagePath + id);
-          message.photourl = `${appDir}\${imagePath}${id}`
+          message.photourl = `${appDir}/${imagePath}${id}`
           console.log('File saved under new URL: ', message.photourl)
         }
     } catch(err) {
