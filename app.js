@@ -74,6 +74,6 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
-    console.log(`You find the DOWNLOAD-folder at ${appDir}`);
+    console.log(`You find the "downloads"-folder at ${appDir}, may you have to create this folder first `);
     console.log(`In VENTUZ replace "https://send.on-screen.info/api/" with "localhost:${port}/"`);
 }) 
