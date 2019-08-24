@@ -9,7 +9,7 @@ const args = process.argv.slice(2)
 const port = process.env.PORT || args[0] || 3000
 const imagePath = `downloads/`
 var newJSON = ''
-const appDir = process.argv.slice(3) || 'C:\\temp\\'
+const appDir = process.argv.slice(3) || sappPath.dirname(require.main.filename);
 
 const check_image = ((messages) => {
   messages.forEach((message) => {
