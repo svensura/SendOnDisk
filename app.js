@@ -7,7 +7,7 @@ const fs = require('fs');
 const axios = require('axios');
 const args = process.argv.slice(2)
 
-const port = process.env.PORT || args[0]
+const port = process.env.PORT || args[0] || 3000
 const imagePath = `downloads/`
 var newJSON = ''
 var appDir = appPath.dirname(require.main.filename);
