@@ -10,7 +10,7 @@ const args = process.argv.slice(2)
 const port = process.env.PORT || args[0] || 3000
 const imagePath = `downloads/`
 var newJSON = ''
-var appDir = appPath.dirname(require.main.filename);
+var appDir = process.argv.slice(2) || appPath.dirname(require.main.filename);
 
 const check_image = ((messages) => {
   messages.forEach((message) => {
@@ -74,5 +74,5 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}!`);
+    console.log(`Server listening on port ${port}, you find the DOWNLOAD-folder at ${appDir}, in VENTUZ replace "https://send.on-screen.info/api/" with "localhost:3000"`);
 }) 
