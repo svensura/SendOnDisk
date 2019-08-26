@@ -2,26 +2,40 @@
 const express = require('express');
 const app = express();
 const appPath = require('path');
+const ip = require('ip');
 const fs = require('fs');
 const axios = require('axios');
 const args = process.argv.slice(2)
 
+const ipAddress = ip.address()
 const port = process.env.PORT || args[0] || 3000
-const imagePath = `downloads/`
-var newJSON = ''
-const appDir = process.argv.slice(3) || appPath.dirname(require.main.filename);
+
+const dir = appPath.sep + 'downloads' +  appPath.sep;
+
+const fullPath = process.execPath
+const lastIndex = fullPath.lastIndexOf(appPath.sep);
+
+outPath = fullPath.substring(0, lastIndex);
+
+
+const appDir = args[1] || outPath; 
+//const appDir = args[1] || appPath.dirname(require.main.filename);
+const dnlDir = appDir + dir
+
+if (!fs.existsSync(dnlDir)){
+  fs.mkdirSync(dnlDir);
+}
 
 const check_image = ((messages) => {
   messages.forEach((message) => {
     var id = message.id + '.png'
     try {
-      if (fs.existsSync(imagePath + id)) {
-          console.log('file exists')
-          message.photourl = `${appDir}/${imagePath}${id}`
-          console.log('File saved under new URL: ', message.photourl)
+      if (fs.existsSync(dnlDir + id)) {
+          message.photourl = `${dnlDir}${id}`
+          console.log('File already exists under URL: ', message.photourl)
         } else if (message.mediatype == 'photo') {
-          download_image(message.photourl, imagePath + id);
-          message.photourl = `${appDir}/${imagePath}${id}`
+          download_image(message.photourl, dnlDir + id);
+          message.photourl = `${dnlDir}${id}`
           console.log('File saved under new URL: ', message.photourl)
         }
     } catch(err) {
@@ -73,7 +87,6 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-    console.log(`You find the "downloads"-folder at ${appDir}, may you have to create this folder first `);
-    console.log(`In VENTUZ replace "https://send.on-screen.info/api/" with "localhost:${port}/"`);
+    console.log(`In VENTUZ replace "https://send.on-screen.info/api/" with "${ipAddress}:${port}/".`);
+    console.log(`You find the "downloads"-folder at "${dnlDir}".`);
 }) 
