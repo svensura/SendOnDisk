@@ -27,14 +27,14 @@ if (!fs.existsSync(dnlDir)){
 
 const check_image = ((messages) => {
   messages.forEach((message) => {
-    var id = message.id + '.png'
+    var filename =dnlDir + message.id + '.png'
     try {
-      if (message.mediatype == 'photo' && fs.existsSync(dnlDir + id)) {
-          console.log('File already exists under URL: ', message.photourl)
-          message.photourl = `${dnlDir}${id}`
+      if (message.mediatype == 'photo' && fs.existsSync(filename)) {
+          console.log('File already exists under URL: ', filename)
+          message.photourl = filename
         } else if (message.mediatype == 'photo') {
-          download_image(message.photourl, dnlDir + id);
-          message.photourl = download_image(message.photourl, dnlDir + id);
+          download_image(message.photourl, filename);
+          message.photourl = download_image(message.photourl, filename);
         }
     } catch(err) {
       console.error(err)
@@ -69,9 +69,10 @@ const download_image = (url, filename) => {
 
 
 app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
-  onScreenPath = req.params.onScreenPath1 + '/' + req.params.onScreenPath2
+  onScreenPath = `https://send.on-screen.info/api/${req.params.onScreenPath1 + '/' + req.params.onScreenPath2}`
+  console.log('on ', onScreenPath)
   try {
-    var newJson = await axios.get(`https://send.on-screen.info/api/${onScreenPath}`).then( resp => {
+    var newJson = await axios.get(onScreenPath).then( resp => {
       var json = resp.data
       var oldMessages = json.project.messages
       newMessages = check_image(oldMessages)
@@ -82,8 +83,11 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
   } catch (e) {
     res.status(404).send()
   }
-    
-//     
+ 
+});
+
+app.get('/', async (req, res) => {
+  console.log('RUNNING')
 });
 
 app.listen(port, () => {
