@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const appPath = require('path');
+const querystring = require('querystring');
 const ip = require('ip');
 const fs = require('fs');
 const axios = require('axios');
@@ -25,7 +26,7 @@ if (!fs.existsSync(dnlDir)){
   fs.mkdirSync(dnlDir);
 }
 
-const checkImage = ((messages) => {
+const checkImages = (messages) => {
   messages.forEach((message) => {
     var filename =dnlDir + message.id + '.png'
     try {
@@ -41,12 +42,12 @@ const checkImage = ((messages) => {
   })
   //json = "W"
   return messages
-});
+};
 
   
 
-const downloadImage = (url, filename) => {
-  axios({ url, responseType: 'stream',})
+const downloadImage = (adr, filename) => {
+  axios({ adr, responseType: 'stream',})
   .then(
     response => new Promise((resolve, reject) => {
       response.data
@@ -60,29 +61,40 @@ const downloadImage = (url, filename) => {
 
     }),
   ).catch((e) => {
-    console.error(`Cannot write file ${filename} from ${url}!`);
-    return url
+    console.error(`Cannot write file ${filename} from ${adr}!`);
+    return adr
   });
 };
 
 
 
-app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
+app.get('/:onScreenPath1/:onScreenPath2/', async (req, res) => {
+  
   onScreenPath = `https://send.on-screen.info/api/${req.params.onScreenPath1 + '/' + req.params.onScreenPath2}`
-  console.log('on ', onScreenPath)
-  try {
-    var newJson = await axios.get(onScreenPath).then( resp => {
+  const qString = querystring.stringify(req);
+  const orgUrl = querystring.parse(qString).originalUrl
+  var page = orgUrl.split("=").pop();
+  if (page == '' || isNaN(page)) {
+    page = 1
+  }
+  var notFound = false
+  do {
+    try {
+      var newJson = await axios.get(`${onScreenPath}?page=${page}`).then( resp => {
       var json = resp.data
       var oldMessages = json.project.messages
-      newMessages = checkImage(oldMessages)
+      console.log('on ', `${onScreenPath}?page=${page}`)
+      newMessages = checkImages(oldMessages)
       json.project.messages = newMessages
+      page++
       return json
-    });
-    res.status(200).send(newJson)
-  } catch (e) {
-    res.status(404).send()
-  }
- 
+      });
+      res.status(200).send(newJson)
+    } catch (e) {
+      notFound = true
+      res.status(404).send()
+    } 
+  } while (notFound != true)
 });
 
 app.get('/', async (req, res) => {
