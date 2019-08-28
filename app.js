@@ -33,7 +33,6 @@ const checkImage = ((messages) => {
           console.log('File already exists under URL: ', filename)
           message.photourl = filename
         } else if (message.mediatype == 'photo') {
-          downloadImage(message.photourl, filename);
           message.photourl = downloadImage(message.photourl, filename);
         }
     } catch(err) {
