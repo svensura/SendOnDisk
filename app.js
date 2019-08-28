@@ -25,7 +25,7 @@ if (!fs.existsSync(dnlDir)){
   fs.mkdirSync(dnlDir);
 }
 
-const check_image = ((messages) => {
+const checkImage = ((messages) => {
   messages.forEach((message) => {
     var filename =dnlDir + message.id + '.png'
     try {
@@ -33,8 +33,8 @@ const check_image = ((messages) => {
           console.log('File already exists under URL: ', filename)
           message.photourl = filename
         } else if (message.mediatype == 'photo') {
-          download_image(message.photourl, filename);
-          message.photourl = download_image(message.photourl, filename);
+          downloadImage(message.photourl, filename);
+          message.photourl = downloadImage(message.photourl, filename);
         }
     } catch(err) {
       console.error(err)
@@ -46,7 +46,7 @@ const check_image = ((messages) => {
 
   
 
-const download_image = (url, filename) => {
+const downloadImage = (url, filename) => {
   axios({ url, responseType: 'stream',})
   .then(
     response => new Promise((resolve, reject) => {
@@ -75,7 +75,7 @@ app.get('/:onScreenPath1/:onScreenPath2', async (req, res) => {
     var newJson = await axios.get(onScreenPath).then( resp => {
       var json = resp.data
       var oldMessages = json.project.messages
-      newMessages = check_image(oldMessages)
+      newMessages = checkImage(oldMessages)
       json.project.messages = newMessages
       return json
     });
