@@ -34,7 +34,8 @@ const checkImages = (messages) => {
           console.log('File already exists under URL: ', filename)
           message.photourl = filename
         } else if (message.mediatype == 'photo') {
-          message.photourl = downloadImage(message.photourl, filename);
+          var newPhotourl = downloadImage(message.photourl, filename);
+          message.photourl = newPhotourl
         }
     } catch(err) {
       console.error(err)
@@ -46,8 +47,8 @@ const checkImages = (messages) => {
 
   
 
-const downloadImage = (adr, filename) => {
-  axios({ adr, responseType: 'stream',})
+const downloadImage = (url, filename) => {
+  axios({ url, responseType: 'stream',})
   .then(
     response => new Promise((resolve, reject) => {
       response.data
@@ -61,8 +62,8 @@ const downloadImage = (adr, filename) => {
 
     }),
   ).catch((e) => {
-    console.error(`Cannot write file ${filename} from ${adr}!`);
-    return adr
+    console.error(`Cannot write file ${filename} from ${url}!`);
+    return url
   });
 };
 
@@ -83,7 +84,9 @@ app.get('/:onScreenPath1/:onScreenPath2/', async (req, res) => {
       var newJson = await axios.get(`${onScreenPath}?page=${page}`).then( resp => {
       var json = resp.data
       var oldMessages = json.project.messages
-      console.log('on ', `${onScreenPath}?page=${page}`)
+      console.log('\x1b[30m')
+      console.log('\x1b[31m', `on ${onScreenPath}?page=${page}`)
+      console.log('\x1b[30m')
       newMessages = checkImages(oldMessages)
       json.project.messages = newMessages
       page++
